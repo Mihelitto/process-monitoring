@@ -7,7 +7,9 @@ import psutil
 
 
 def main():
-    args_parser = argparse.ArgumentParser()
+    args_parser = argparse.ArgumentParser(
+        description='Script for collecting statistics of running process',
+    )
     args_parser.add_argument(
         'program',
         type=str,
@@ -30,6 +32,7 @@ def main():
     interval = args.interval
     program = args.program.split()
     log_path = args.log
+
     try:
         proc = subprocess.Popen(program)
     except FileNotFoundError:
@@ -49,8 +52,9 @@ def main():
         while psutil.pid_exists(proc.pid):
             current_time = datetime.datetime.now()
             cpu_load = python_process.cpu_percent()
-            working_set = python_process.memory_info().rss
-            private_bytes = python_process.memory_info().private
+            memory_info = python_process.memory_info()
+            working_set = memory_info.rss
+            private_bytes = memory_info.private
             file_handles = len(python_process.open_files())
 
             log_writer.writerow([
