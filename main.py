@@ -30,8 +30,11 @@ def main():
     interval = args.interval
     program = args.program.split()
     log_path = args.log
-
-    proc = subprocess.Popen(program)
+    try:
+        proc = subprocess.Popen(program)
+    except FileNotFoundError:
+        print('Файл не найден')
+        exit()
     python_process = psutil.Process(proc.pid)
 
     with open(log_path, 'w', newline='') as log_file:
