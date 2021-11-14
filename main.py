@@ -1,4 +1,5 @@
 import subprocess
+import datetime
 import time
 import argparse
 import csv
@@ -15,8 +16,8 @@ def main():
     args_parser.add_argument(
         '-i', '--interval',
         type=float,
-        help='statistics collection interval',
-        default=0.5,
+        help='statistics collection interval, in seconds',
+        default=1,
     )
     args_parser.add_argument(
         '-l', '--log',
@@ -36,17 +37,21 @@ def main():
     with open(log_path, 'w', newline='') as log_file:
         log_writer = csv.writer(log_file, dialect='excel', delimiter=',')
         log_writer.writerow([
+            'Date and time',
             'CPU load',
             'Working set memory',
             'Private memory',
             'Open handles',
         ])
         while psutil.pid_exists(proc.pid):
+            current_time = datetime.datetime.now()
             cpu_load = python_process.cpu_percent()
             working_set = python_process.memory_info().rss
             private_bytes = python_process.memory_info().private
             file_handles = len(python_process.open_files())
+
             log_writer.writerow([
+                current_time,
                 cpu_load,
                 working_set,
                 private_bytes,
